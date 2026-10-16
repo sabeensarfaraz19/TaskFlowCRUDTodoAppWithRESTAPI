@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow | Your Personal Workspace</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
+</head>
+<style>
+    /* =========================
+   1. Global Styles
+========================= */
+
+    :root {
+        --background: #F5F1E9;
+        --text: #332D27;
+        --brown: #514438;
+        --brown-dark: #3D332A;
+        --brown-light: #786650;
+        --muted: #918477;
+        --border: #E8E0D5;
+        --surface: #FBF9F5;
+        --soft-beige: #EEE7DD;
+        --accent: #D9C2A3;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        min-height: 100vh;
+        font-family: "Inter", sans-serif;
+
+        color: var(--text);
+        position: relative;
+        isolation: isolate;
+    }
+
+    /* =========================
+   2. Background Decoration
+========================= */
+
+    .background-decoration {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    .decoration-circle {
+        position: absolute;
+        width: 384px;
+        height: 384px;
+        border-radius: 50%;
+        filter: blur(65px);
+    }
+
+    .decoration-top {
+        top: -128px;
+        right: -80px;
+        background: rgba(216, 199, 174, 0.4);
+    }
+
+    .decoration-bottom {
+        bottom: 0;
+        left: -80px;
+        background: rgba(198, 182, 161, 0.3);
+    }
+
+    /* =========================
+   3. Main Layout
+========================= */
+
+    .main-container {
+        min-height: 100vh;
+        max-width: 1024px;
+        margin: 0 auto;
+        padding: 48px 16px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .todo-card {
+        width: 100%;
+        max-width: 672px;
+        overflow: hidden;
+
+        background: #FFFFFF;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 24px;
+
+        box-shadow: 0 25px 50px -12px rgba(120, 102, 80, 0.10),
+            0 12px 24px -12px rgba(51, 45, 39, 0.08);
+    }
+
+    /* =========================
+   4. Hero Header
+========================= */
+
+    .hero-header {
+        padding: 36px 24px;
+        color: #FFFFFF;
+
+        background: linear-gradient(135deg,
+                #514438 0%,
+                #786650 100%);
+    }
+
+    .header-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 36px;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .brand-icon {
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.1);
+        font-size: 20px;
+    }
+
+    .brand-info h1 {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.7px;
+    }
+
+    .brand-info p {
+        margin-top: 4px;
+        font-size: 14px;
+        color: #E5D9C9;
+    }
+
+    .focus-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+
+        padding: 9px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+
+        background: rgba(255, 255, 255, 0.1);
+        color: #F2E9DC;
+
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .eyebrow {
+        margin-bottom: 8px;
+        color: #E5D4BD;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 2.4px;
+    }
+
+    .hero-header h2 {
+        font-size: 36px;
+        font-weight: 800;
+        letter-spacing: -1.2px;
+        line-height: 1.2;
+    }
+
+    .hero-description {
+        max-width: 420px;
+        margin-top: 12px;
+
+        color: #E9DFD2;
+        font-size: 14px;
+        line-height: 1.75;
+    }
+
+    .header-accent {
+        width: 64px;
+        height: 4px;
+        margin-top: 28px;
+
+        background: #D9C2A3;
+        border-radius: 999px;
+    }
+
+    /* =========================
+   5. Todo Content
+========================= */
+
+    .todo-content {
+        padding: 32px 20px;
+    }
+
+    .section-heading h3 {
+        color: var(--text);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .section-heading p {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    /* =========================
+   6. Input Form
+========================= */
+
+    .todo-form {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .input-wrapper {
+        position: relative;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .input-icon {
+        position: absolute;
+        top: 50%;
+        left: 16px;
+        transform: translateY(-50%);
+
+        color: #A39482;
+        pointer-events: none;
+    }
+
+    .input-wrapper input {
+        width: 100%;
+        min-height: 54px;
+        padding: 16px 16px 16px 44px;
+
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        outline: none;
+
+        background: var(--surface);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 13px;
+
+        transition:
+            border-color 0.25s ease,
+            background 0.25s ease,
+            box-shadow 0.25s ease;
+    }
+
+    .input-wrapper input::placeholder {
+        color: #A99E90;
+    }
+
+    .input-wrapper input:focus {
+        border-color: #8A745B;
+        background: #FFFFFF;
+        box-shadow: 0 0 0 4px rgba(217, 203, 184, 0.3);
+    }
+
+    .addBtn {
+        min-height: 54px;
+        padding: 15px 24px;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+
+        border: none;
+        border-radius: 12px;
+
+        background: var(--brown);
+        color: #FFFFFF;
+
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+
+        cursor: pointer;
+        white-space: nowrap;
+
+        box-shadow: 0 8px 18px rgba(81, 68, 56, 0.15);
+
+        transition:
+            background 0.25s ease,
+            transform 0.25s ease,
+            box-shadow 0.25s ease;
+    }
+
+    .addBtn:hover {
+        background: var(--brown-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 22px rgba(81, 68, 56, 0.2);
+    }
+
+    .addBtn:active {
+        transform: translateY(0);
+    }
+
+    /* =========================
+   7. Task List Heading
+========================= */
+
+    .task-list-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+
+        margin-top: 36px;
+    }
+
+    .task-list-heading h4 {
+        color: var(--brown);
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .task-label {
+        padding: 7px 12px;
+        border-radius: 999px;
+
+        background: #F2EADF;
+        color: var(--brown-light);
+
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    /* =========================
+   8. Todo Container
+========================= */
+
+    .todo-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+
+    /* Task Card */
+    .task-item {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        padding: 16px;
+        border: 1px solid #EAE3D9;
+        border-radius: 16px;
+
+        background: #FFFFFF;
+
+        transition:
+            border-color 0.25s ease,
+            box-shadow 0.25s ease;
+    }
+
+    .task-item:hover {
+        border-color: #CBB89E;
+        box-shadow: 0 4px 12px rgba(67, 57, 47, 0.08);
+    }
+
+    /* Task Details */
+    .task-details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .task-title {
+        color: #43392F;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 24px;
+        overflow-wrap: anywhere;
+    }
+
+    .task-description {
+        margin-top: 4px;
+        color: #A39482;
+        font-size: 12px;
+        line-height: 18px;
+    }
+
+    /* Action Buttons */
+    .task-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
+    .task-actions button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+
+        padding: 9px 12px;
+        border: none;
+        border-radius: 8px;
+
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition:
+            background-color 0.25s ease,
+            transform 0.2s ease;
+    }
+
+    .task-actions button:hover {
+        transform: translateY(-1px);
+    }
+
+
+
+    .edit-input,
+    .edit-input:focus,
+    .edit-input:focus-visible,
+    .edit-input:active {
+        display: none;
+        width: 100%;
+        padding: 0;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        appearance: none;
+        -webkit-appearance: none;
+        color: #43392F;
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 24px;
+    }
+
+    /* Edit Button */
+    .edit-btn {
+        background: #F2EADF;
+        color: #786650;
+    }
+
+    .edit-btn:hover {
+        background: #E5D8C6;
+    }
+
+    /* Delete Button */
+    .delete-btn {
+        background: #F9ECE8;
+        color: #B65D4D;
+    }
+
+    .delete-btn:hover {
+        background: #F2DAD4;
+    }
+
+    .save-btn {
+        display: none;
+        background-color: rgb(226, 247, 226);
+        color: green;
+    }
+
+    .save-btn:hover {
+        background: rgb(190, 215, 190)
+    }
+
+    /* Responsive Layout */
+    @media (min-width: 640px) {
+        .task-item {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+    }
+
+
+    /* Empty State */
+
+    .empty-state {
+        padding: 48px 20px;
+        text-align: center;
+
+        border: 2px dashed #E2E8F0;
+        border-radius: 16px;
+    }
+
+    .empty-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 16px;
+        background: var(--soft-beige);
+        color: var(--brown);
+
+        font-size: 24px;
+    }
+
+    .empty-state h4 {
+        margin-top: 16px;
+        color: var(--brown);
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .empty-state p {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    /* =========================
+   9. Footer
+========================= */
+
+    .todo-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+
+        margin-top: 32px;
+        padding-top: 20px;
+
+        border-top: 1px solid var(--soft-beige);
+
+        color: #A39482;
+        font-size: 11px;
+    }
+
+    .todo-footer p {
+        line-height: 1.7;
+    }
+
+    .footer-heart {
+        margin-right: 4px;
+        color: #B98273;
+    }
+
+    /* =========================
+   10. Responsive Design
+========================= */
+
+    @media (min-width: 640px) {
+        .hero-header {
+            padding: 40px 36px;
+        }
+
+        .todo-content {
+            padding: 36px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .main-container {
+            padding: 24px 12px;
+        }
+
+        .todo-card {
+            border-radius: 20px;
+        }
+
+        .hero-header {
+            padding: 28px 20px;
+        }
+
+        .header-top {
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+
+        .brand {
+            gap: 9px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+        }
+
+        .brand-info h1 {
+            font-size: 21px;
+        }
+
+        .brand-info p {
+            font-size: 12px;
+        }
+
+        .focus-badge {
+            padding: 8px;
+            font-size: 10px;
+        }
+
+        .hero-header h2 {
+            font-size: 30px;
+        }
+
+        .hero-description {
+            font-size: 13px;
+        }
+
+        .todo-content {
+            padding: 28px 20px;
+        }
+
+        .todo-form {
+            flex-direction: column;
+        }
+
+        .addBtn {
+            width: 100%;
+        }
+
+        .task-list-heading {
+            align-items: flex-start;
+        }
+
+        .task-label {
+            font-size: 10px;
+        }
+
+        .todo-footer {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .focus-badge {
+            gap: 4px;
+            font-size: 9px;
+        }
+
+        .brand-info h1 {
+            font-size: 19px;
+        }
+
+        .hero-header h2 {
+            font-size: 27px;
+        }
+    }
+</style>
+
+<body>
+
+    <!-- Background Decoration -->
+    <div class="background-decoration">
+        <div class="decoration-circle decoration-top"></div>
+        <div class="decoration-circle decoration-bottom"></div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="main-container">
+
+        <section class="todo-card">
+
+            <!-- Header -->
+            <header class="hero-header">
+
+                <div class="header-top">
+
+                    <div class="brand">
+                        <div class="brand-icon">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+
+                        <div class="brand-info">
+                            <h1>TaskFlow</h1>
+                            <p>Your day, organized.</p>
+                        </div>
+                    </div>
+
+                    <span class="focus-badge">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        Stay focused
+                    </span>
+
+                </div>
+
+                <p class="eyebrow">YOUR PERSONAL WORKSPACE</p>
+
+                <h2>Make today count.</h2>
+
+                <p class="hero-description">
+                    Organize your thoughts, plan your priorities, and make
+                    every day productive.
+                </p>
+
+                <div class="header-accent"></div>
+
+            </header>
+
+            <!-- Todo Content -->
+            <div class="todo-content">
+
+                <div class="section-heading">
+                    <h3>My tasks</h3>
+                    <p>A little progress each day adds up.</p>
+                </div>
+
+                <!-- Input Field and Add Button -->
+                <form class="todo-form" id="todoForm">
+
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-pen-to-square input-icon"></i>
+
+                        <input type="text" id="userInput" placeholder="What needs to be done?" autocomplete="off">
+                    </div>
+
+                    <button type="button" class="addBtn">
+                        <i class="fa-solid fa-plus"></i>
+                        Add Task
+                    </button>
+
+                </form>
+
+                <!-- Task List Heading -->
+                <div class="task-list-heading">
+                    <h4>Your task list</h4>
+
+                    <span class="task-label">Stay on track</span>
+                </div>
+
+                <!-- Todo Container -->
+                <div id="todoContainer" class="todo-container">
+                </div>
+
+
+
+
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state">
+
+                    <div class="empty-icon">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                    </div>
+
+                    <h4>All clear for now!</h4>
+
+                    <p>
+                        Add your first task and get things moving.
+                    </p>
+
+                </div>
+
+
+                <!-- Footer -->
+                <footer class="todo-footer">
+
+                    <p>
+                        <i class="fa-solid fa-heart footer-heart"></i>
+                        Built for better days
+                    </p>
+
+                    <p>TaskFlow &copy; 2026</p>
+
+                </footer>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
